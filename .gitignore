@@ -1,0 +1,5 @@
+*.DS_Store
+KSTableView.xcodeproj/project.xcworkspace/xcuserdata
+KSTableView.xcodeproj/xcuserdata
+KSTableView.xcworkspace/xcuserdata
+Pods/Pods.xcodeproj/xcuserdata
