@@ -54,6 +54,7 @@ static NSInteger coinNum = 0;
     [self.clickButton setHidden:YES];
     for (int i=0; i<CoinTotalCount; i++) {
         [self performSelector:@selector(initCoinWith:) withObject:@(i) afterDelay:i*0.01];
+        coinNum++;
     }
 }
 
@@ -102,6 +103,10 @@ static NSInteger coinNum = 0;
         UIView *coin = [self.view viewWithTag:[[self.coinArray firstObject] integerValue]];
         [coin removeFromSuperview];
         [self.coinArray removeObjectAtIndex:0];
+        if (--coinNum == 0) {
+            [self.clickButton setHidden:NO];
+            [self.clickButton setTitle:@"再来一发" forState:UIControlStateNormal];
+        }
     }
 }
 
