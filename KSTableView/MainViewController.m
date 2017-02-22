@@ -28,7 +28,7 @@ static NSString *identifier = @"MainViewCell";
     // Do any additional setup after loading the view.
     
     //命名遵守，名字后加上Controller为类名，数组里面是前面的部分
-    self.dataArray = @[@"KSTableView", @"KSTableView", @"KSTableView", @"KSTableView"];
+    self.dataArray = @[@"KSTableView", @"KSRedPacket", @"KSTableView", @"KSTableView"];
     [self.view addSubview:self.collectionView];
 }
 
