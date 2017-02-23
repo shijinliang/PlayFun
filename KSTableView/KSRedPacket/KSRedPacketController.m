@@ -79,22 +79,105 @@ static NSInteger coinNum = 0;
 
 - (void)addAnimationWithCoin:(UIView *)coin
 {
+    //这里使用组动画，统一管理
+    CAAnimationGroup *group = [CAAnimationGroup animation];
+    group.animations = @[[self positionAnimation:coin], [self scaleAnimation2]];
+    group.duration = 1.5f;
+    group.delegate = self;
+    //动画结束的时候移除动画，默认是YES，目前没有实际用到过，这里设为NO是为了玩耍
+    group.removedOnCompletion = NO;
+    group.fillMode = kCAFillModeForwards;
+    [coin.layer addAnimation:group forKey:@"grouop"];
+    
+}
+
+- (CAAnimation *)positionAnimation:(UIView *)coin
+{
     //屏幕宽度中间取250宽度，用于随机硬币出现的初始位置
     NSInteger randX = arc4random()%250;
     CGFloat offsetX = self.view.center.x-250/2+randX;
     //计算曲线的最高点
     CGFloat cpx = (offsetX+self.view.center.x)/2;
+    CGFloat cpy = arc4random()%50-coin.center.y/3; 
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, offsetX, [UIScreen mainScreen].bounds.size.height);
+    CGPathAddQuadCurveToPoint(path, NULL, cpx, cpy, coin.layer.position.x, coin.layer.position.y);
     
-    CGPathAddQuadCurveToPoint(path, NULL, cpx, -50, coin.frame.origin.x, coin.frame.origin.y);
-    
+    //移动的帧动画
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
-    animation.duration = 1.5f;
     animation.path = path;
-    animation.delegate = self;
-    [coin.layer addAnimation:animation forKey:@"position"];
+    CFRelease(path);
+    path = nil;
+    //使用组动画，此部分会在组动画里面设置，如果不是用组动画，需要设置下面
+    //animation.duration = 10.5f;
+    //animation.delegate = self;
+    return animation;
+}
+
+- (CAAnimation *)scaleAnimation1
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    CGFloat fromScale = 1 + (arc4random()%10*0.1f);
+    animation.fromValue = @(fromScale);
+    animation.toValue = @(fromScale/2);
+    return animation;
+}
+
+- (CAAnimation *)scaleAnimation2
+{
+    CGFloat fromScale = 1 + arc4random()%10*0.1f;
+    //帧动画的缩放的好处,一堆value
+    NSLog(@"fromScale %f", fromScale);
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"transform"];
+    animation.values = @[[self scaleValue:fromScale], [self scaleValue:fromScale*1.5], [self scaleValue:fromScale], [self scaleValue:fromScale/2], [self scaleValue:fromScale/3], [self scaleValue:fromScale/4], [self scaleValue:fromScale/5]];
+    return animation;
+}
+
+- (NSValue *)scaleValue:(CGFloat)scale
+{
+    return [NSValue valueWithCATransform3D:CATransform3DMakeScale(scale, scale, scale)];
+}
+
+- (void)congratAnimation
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    animation.fromValue = @(0);
+    animation.toValue = @(M_PI);
+    animation.duration = 0.2;
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
+    //animation.autoreverses = YES;
+    //animation.repeatCount = 10;
+    [self.bagView.layer addAnimation:animation forKey:@"waggle"];
     
+    [self performSelector:@selector(nextAnimation) withObject:self afterDelay:0.21];
+    [self performSelector:@selector(YAnimation) withObject:self afterDelay:0.42];
+}
+
+- (void)nextAnimation
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.x"];
+    animation.fromValue = @(0);
+    animation.toValue = @(M_PI);
+    animation.duration = 0.2;
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
+    //animation.autoreverses = YES;
+    //animation.repeatCount = 10;
+    [self.bagView.layer addAnimation:animation forKey:@"fangun"];
+}
+
+- (void)YAnimation
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.y"];
+    animation.fromValue = @(0);
+    animation.toValue = @(M_PI);
+    animation.duration = 0.2;
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
+    //animation.autoreverses = YES;
+    //animation.repeatCount = 10;
+    [self.bagView.layer addAnimation:animation forKey:@"zhuanquan"];
 }
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
@@ -106,6 +189,7 @@ static NSInteger coinNum = 0;
         if (--coinNum == 0) {
             [self.clickButton setHidden:NO];
             [self.clickButton setTitle:@"再来一发" forState:UIControlStateNormal];
+            [self congratAnimation];
         }
     }
 }
