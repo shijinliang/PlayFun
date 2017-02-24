@@ -81,7 +81,7 @@ static NSInteger coinNum = 0;
 {
     //这里使用组动画，统一管理
     CAAnimationGroup *group = [CAAnimationGroup animation];
-    group.animations = @[[self positionAnimation:coin], [self scaleAnimation2]];
+    group.animations = @[[self positionAnimation:coin], [self scaleAnimation1]];
     group.duration = 1.5f;
     group.delegate = self;
     //动画结束的时候移除动画，默认是YES，目前没有实际用到过，这里设为NO是为了玩耍
@@ -116,7 +116,7 @@ static NSInteger coinNum = 0;
 
 - (CAAnimation *)scaleAnimation1
 {
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     CGFloat fromScale = 1 + (arc4random()%10*0.1f);
     animation.fromValue = @(fromScale);
     animation.toValue = @(fromScale/2);
